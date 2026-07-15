@@ -1013,7 +1013,7 @@ git commit -m "feat: Meta Graph API client with cursor pagination and backoff re
 - Consumes: `Config` (Task 2).
 - Produces: `interface Storage { put(key: string, body: Buffer, contentType?: string): Promise<void> }`; `class LocalStorage implements Storage { constructor(baseDir: string) }`; `class S3Storage implements Storage { constructor(bucket: string, region: string) }`; `createStorage(cfg: Config): Storage`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `tests/storage.test.ts`:
 ```ts
@@ -1047,12 +1047,12 @@ describe('createStorage', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/storage.test.ts`
 Expected: FAIL — module not found.
 
-- [ ] **Step 3: Write implementation**
+- [x] **Step 3: Write implementation**
 
 `src/storage/index.ts`:
 ```ts
@@ -1101,12 +1101,12 @@ export function createStorage(cfg: Config): Storage {
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run tests/storage.test.ts && npm run typecheck`
 Expected: 3 tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
