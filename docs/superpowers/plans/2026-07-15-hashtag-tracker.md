@@ -1580,7 +1580,7 @@ git commit -m "feat: sync service — page-wise upsert and resumable asset uploa
 - Consumes: `MediaRepo` (Task 5), `encodeCursor`/`decodeCursor` (Task 4), `createDb` (Task 3), `loadConfig` (Task 2).
 - Produces: `createApp(db: Knex): Express` — `GET /health` → `{ ok: true }`; `GET /hashtags?limit&cursor` → `{ data: MediaRow[], nextCursor: string | null }`, 400 on invalid cursor, limit clamped 1–100 (default 20), central JSON error handler.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `tests/api.test.ts`:
 ```ts
@@ -1644,12 +1644,12 @@ describe('GET /hashtags', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/api.test.ts`
 Expected: FAIL — module not found.
 
-- [ ] **Step 3: Write implementation**
+- [x] **Step 3: Write implementation**
 
 `src/app.ts`:
 ```ts
@@ -1719,12 +1719,12 @@ app.listen(cfg.PORT, () => {
 
 Note: the error handler middleware must keep the unused `_next` parameter — Express identifies error handlers by arity (4 params). Add `// eslint-disable-next-line @typescript-eslint/no-unused-vars` above it if lint complains.
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run tests/api.test.ts && npm run typecheck && npm run lint`
 Expected: 4 tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
