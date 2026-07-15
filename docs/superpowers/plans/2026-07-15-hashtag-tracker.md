@@ -29,7 +29,7 @@
 - Consumes: nothing
 - Produces: `npm run typecheck`, `npm test`, `npm run lint` all green; Postgres reachable via `docker compose up -d`.
 
-- [ ] **Step 1: Init package and install dependencies**
+- [x] **Step 1: Init package and install dependencies**
 
 ```bash
 npm init -y
@@ -38,7 +38,7 @@ npm install express knex pg zod node-cron dotenv @aws-sdk/client-s3 @aws-sdk/cli
 npm install -D typescript tsx vitest supertest @types/express @types/node @types/supertest @types/node-cron eslint @eslint/js typescript-eslint prettier eslint-config-prettier
 ```
 
-- [ ] **Step 2: Write config files**
+- [x] **Step 2: Write config files**
 
 `tsconfig.json`:
 ```json
@@ -145,13 +145,13 @@ SYNC_MAX_ITEMS=500
 META_PAGE_SIZE=50
 ```
 
-- [ ] **Step 3: Add npm scripts**
+- [x] **Step 3: Add npm scripts**
 
 ```bash
 npm pkg set scripts.typecheck="tsc --noEmit" scripts.test="vitest run" scripts.lint="eslint ." scripts.format="prettier --write ." scripts.dev:api="tsx watch src/api.ts" scripts.dev:worker="tsx watch src/worker.ts" scripts.db:migrate="tsx src/db/migrate.ts" scripts.sync:once="tsx src/scripts/sync-once.ts"
 ```
 
-- [ ] **Step 4: Verify toolchain**
+- [x] **Step 4: Verify toolchain**
 
 ```bash
 mkdir -p src tests && echo 'export {};' > src/placeholder.ts
@@ -160,7 +160,7 @@ docker compose up -d && docker compose ps
 ```
 Expected: typecheck/test/lint all exit 0 (vitest passes with no tests); postgres container `running`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
