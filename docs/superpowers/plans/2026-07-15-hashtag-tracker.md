@@ -1372,7 +1372,7 @@ git commit -m "feat: queue abstraction with retrying LocalQueue and SQS driver"
   - `interface SyncDeps { hashtags: Pick<HashtagRepo, 'findByName' | 'setLastSynced'>; media: Pick<MediaRepo, 'upsertBatch' | 'findPendingAssets' | 'setStorageKey'>; meta: Pick<MetaClient, 'fetchHashtagMedia'>; storage: Storage; maxItems: number; assetConcurrency?: number; fetchFn?: typeof fetch }`.
   - `class SyncService { constructor(deps: SyncDeps); run(job: Job): Promise<void> }`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `tests/sync.test.ts`:
 ```ts
@@ -1476,12 +1476,12 @@ describe('SyncService', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/sync.test.ts`
 Expected: FAIL — module not found.
 
-- [ ] **Step 3: Write implementation**
+- [x] **Step 3: Write implementation**
 
 `src/services/sync.ts`:
 ```ts
@@ -1556,12 +1556,12 @@ export class SyncService {
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run tests/sync.test.ts && npm run typecheck`
 Expected: 6 tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
