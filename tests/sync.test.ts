@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { SyncService, JOB_SYNC_TOP, JOB_SYNC_RECENT, SyncDeps } from '../src/services/sync';
 import type { MetaMedia } from '../src/meta/client';
 
