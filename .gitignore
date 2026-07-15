@@ -4,3 +4,5 @@ dist/
 .env
 coverage/
 /problem_statement.md
+.claude/
+.remember/

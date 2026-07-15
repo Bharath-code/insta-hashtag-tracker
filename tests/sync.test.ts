@@ -87,6 +87,13 @@ describe('SyncService', () => {
     );
   });
 
+  it('rejects media ids that could traverse storage paths', async () => {
+    const deps = makeDeps([], [{ id: '../../etc/evil', media_url: 'https://cdn/x.jpg' }]);
+    await new SyncService(deps as unknown as SyncDeps).run(job(JOB_SYNC_RECENT));
+    expect(deps.storage.put).not.toHaveBeenCalled();
+    expect(deps.media.setStorageKey).not.toHaveBeenCalled();
+  });
+
   it('video content-type gets mp4 extension', async () => {
     const deps = makeDeps([], [{ id: 'v1', media_url: 'https://cdn/v1' }]);
     deps.fetchFn = vi.fn().mockResolvedValue(

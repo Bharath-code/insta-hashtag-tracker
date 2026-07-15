@@ -28,10 +28,8 @@ export function createApp(db: Knex): Express {
       const rows = await media.listPage(limit, cursor ?? undefined);
       const last = rows[rows.length - 1];
       const nextCursor =
-        rows.length === limit && last
-          ? encodeCursor({ p: new Date(last.posted_at).toISOString(), i: last.id })
-          : null;
-      res.json({ data: rows, nextCursor });
+        rows.length === limit && last ? encodeCursor({ p: last.posted_at_cursor, i: last.id }) : null;
+      res.json({ data: rows.map(({ posted_at_cursor, ...row }) => row), nextCursor });
     } catch (err) {
       next(err);
     }

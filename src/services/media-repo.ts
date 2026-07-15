@@ -57,21 +57,30 @@ export class MediaRepo {
       .merge(['like_count', 'comments_count', 'updated_at']);
   }
 
-  async listPage(limit: number, cursor?: Cursor): Promise<MediaRow[]> {
-    let q = this.db<MediaRow>('media')
+  async listPage(limit: number, cursor?: Cursor): Promise<Array<MediaRow & { posted_at_cursor: string }>> {
+    let q = this.db('media')
       .orderBy([
         { column: 'posted_at', order: 'desc' },
         { column: 'id', order: 'desc' },
       ])
       .limit(limit);
     if (cursor) q = q.whereRaw('(posted_at, id) < (?, ?)', [cursor.p, cursor.i]);
-    return q.select('*');
+    // Microsecond-precision cursor value; JS Date truncates to ms, which can skip rows across pages.
+    return q.select(
+      '*',
+      this.db.raw(
+        `to_char(posted_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"') as posted_at_cursor`,
+      ),
+    );
   }
 
   async findPendingAssets(hashtagId: number): Promise<Array<{ id: string; media_url: string }>> {
+    // Bounded batch: a growing backlog drains over successive syncs instead of ballooning memory.
     return this.db('media')
       .where({ hashtag_id: hashtagId, storage_key: null })
       .whereNotNull('media_url')
+      .orderBy('posted_at', 'desc')
+      .limit(500)
       .select('id', 'media_url');
   }
 

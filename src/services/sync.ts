@@ -57,6 +57,8 @@ export class SyncService {
   }
 
   private async downloadAndStore(id: string, url: string): Promise<string> {
+    // Meta media IDs are numeric; reject anything that could traverse paths in the storage key.
+    if (!/^[A-Za-z0-9_-]+$/.test(id)) throw new Error(`unsafe media id: ${id}`);
     const fetchFn = this.deps.fetchFn ?? fetch;
     const res = await fetchFn(url);
     if (!res.ok) throw new Error(`asset download failed with status ${res.status}`);
