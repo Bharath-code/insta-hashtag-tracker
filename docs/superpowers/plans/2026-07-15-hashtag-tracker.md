@@ -1939,7 +1939,7 @@ git commit -m "feat: worker with cron scheduling, shared bootstrap, sync-once sc
 - Consumes: the finished system.
 - Produces: assignment deliverables per problem_statement.md.
 
-- [ ] **Step 1: Write instructions.md**
+- [x] **Step 1: Write instructions.md**
 
 Must contain exactly these headers (assignment requirement): `setup`, `vars`, `tradeoffs`, `ai-usage`.
 
@@ -1996,7 +1996,7 @@ See `docs/ENGINEERING.md` §10 for the full ledger. Highlights:
 
 Adjust the ai-usage section to reflect what actually happened during the build.
 
-- [ ] **Step 2: Create ai-usage folder**
+- [x] **Step 2: Create ai-usage folder**
 
 `ai-usage/README.md`:
 ```markdown
@@ -2009,11 +2009,11 @@ Claude Code session exports for this assignment. Sensitive values (tokens) redac
 
 Remind the user to export the session: in Claude Code run `/export` and save to `ai-usage/session-design-and-build.md`, then scrub the Meta token from the export (`sed -i '' 's/EAAM[A-Za-z0-9]*/<REDACTED_META_TOKEN>/g' ai-usage/*.md`).
 
-- [ ] **Step 3: Reconcile docs/ENGINEERING.md with reality**
+- [x] **Step 3: Reconcile docs/ENGINEERING.md with reality**
 
 Read `docs/ENGINEERING.md` and fix anything the implementation changed (file names, retry counts, behavior). It is a living doc — it must match the shipped code.
 
-- [ ] **Step 4: Final verification**
+- [x] **Step 4: Final verification**
 
 ```bash
 npm test && npm run typecheck && npm run lint
@@ -2021,7 +2021,7 @@ git grep -l "EAAM" -- ':!problem_statement.md' || echo "no leaked tokens"
 ```
 Expected: suite green; no token leaked outside problem_statement.md (consider redacting it there too before pushing).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
