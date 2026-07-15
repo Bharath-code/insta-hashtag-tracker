@@ -288,7 +288,7 @@ git commit -m "feat: zod-validated env config with driver cross-checks"
 **Interfaces:**
 - Produces: `createDb(databaseUrl: string): Knex` (migrations + seeds directories preconfigured); tables `hashtags` and `media` per spec §4; test helper `getTestDb(): Knex` and `resetDb(db: Knex): Promise<void>`.
 
-- [ ] **Step 1: Write the failing integration test**
+- [x] **Step 1: Write the failing integration test**
 
 `tests/helpers/db.ts`:
 ```ts
@@ -335,12 +335,12 @@ describe('migrations and seed', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/db.test.ts`
 Expected: FAIL — cannot find module `../../src/db`.
 
-- [ ] **Step 3: Write knex factory, migration, seed**
+- [x] **Step 3: Write knex factory, migration, seed**
 
 `src/db/index.ts`:
 ```ts
@@ -422,12 +422,12 @@ main().catch((err) => {
 });
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `docker compose up -d && npx vitest run tests/db.test.ts && npm run typecheck`
 Expected: 2 tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
