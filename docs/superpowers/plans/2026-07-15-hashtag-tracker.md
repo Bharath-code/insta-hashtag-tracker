@@ -1746,7 +1746,7 @@ git commit -m "feat: express app with cursor-paginated GET /hashtags"
   - `npm run dev:worker` starts consumer + cron `0 */3 * * *`; enqueues `JOB_SYNC_TOP` once when `last_synced_at` is null, and `JOB_SYNC_RECENT` at startup and on each cron tick.
   - `npm run sync:once` runs one recent sync directly (no queue) and exits.
 
-- [ ] **Step 1: Write the failing test (hashtag-id caching logic)**
+- [x] **Step 1: Write the failing test (hashtag-id caching logic)**
 
 `tests/bootstrap.test.ts`:
 ```ts
@@ -1787,12 +1787,12 @@ describe('ensureHashtag', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/bootstrap.test.ts`
 Expected: FAIL — module not found.
 
-- [ ] **Step 3: Write bootstrap, worker, and script**
+- [x] **Step 3: Write bootstrap, worker, and script**
 
 `src/bootstrap.ts`:
 ```ts
@@ -1899,7 +1899,7 @@ main().catch((err) => {
 });
 ```
 
-- [ ] **Step 4: Run tests, then smoke-test end to end**
+- [x] **Step 4: Run tests, then smoke-test end to end**
 
 ```bash
 npx vitest run && npm run typecheck && npm run lint
@@ -1920,7 +1920,7 @@ curl 'http://localhost:3000/hashtags?limit=5'
 ```
 Expected: JSON `{ data: [...], nextCursor }` newest-first.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
