@@ -541,7 +541,7 @@ git commit -m "feat: opaque keyset cursor encode/decode"
   - `interface HashtagRow { id: number; name: string; meta_hashtag_id: string | null; last_synced_at: Date | null }`.
   - `class HashtagRepo { constructor(db: Knex); findByName(name: string): Promise<HashtagRow | undefined>; setMetaId(id: number, metaHashtagId: string): Promise<void>; setLastSynced(id: number): Promise<void> }`.
 
-- [ ] **Step 1: Write the failing integration test**
+- [x] **Step 1: Write the failing integration test**
 
 `tests/media-repo.test.ts`:
 ```ts
@@ -636,12 +636,12 @@ describe('HashtagRepo', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/media-repo.test.ts`
 Expected: FAIL — module not found.
 
-- [ ] **Step 3: Write implementation**
+- [x] **Step 3: Write implementation**
 
 `src/services/media-repo.ts`:
 ```ts
@@ -748,12 +748,12 @@ export class HashtagRepo {
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run tests/media-repo.test.ts && npm run typecheck`
 Expected: 5 tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
