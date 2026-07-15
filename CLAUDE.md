@@ -6,9 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Take-home assignment (`problem_statement.md`): an ingestion pipeline tracking the Instagram `matcha` hashtag — fetch top/recent media from the Meta Graph API, store metadata in Postgres, copy assets to S3/local storage, dedupe, and serve one cursor-paginated `GET /hashtags` API.
 
-**Current state: design docs only, no code yet.** Implementation follows the task-by-task plan in `docs/superpowers/plans/2026-07-15-hashtag-tracker.md` (Tasks 1–12, checkbox-tracked, each with failing test → implementation → commit). Design rationale lives in `docs/ENGINEERING.md`; spec in `docs/superpowers/specs/2026-07-15-hashtag-tracker-design.md`. Update the plan's checkboxes as tasks complete.
+**Current state: implementation complete.** All 12 tasks in `docs/superpowers/plans/2026-07-15-hashtag-tracker.md` are checked off, including both AWS drivers (`src/queue/sqs.ts`, `S3Storage` in `src/storage/index.ts`) using the AWS SDK v3 with the standard credential chain — no extra AWS tooling or MCP servers are needed. Design rationale lives in `docs/ENGINEERING.md`; spec in `docs/superpowers/specs/2026-07-15-hashtag-tracker-design.md`. Setup/usage docs for reviewers are in `README.md` and `instructions.md`.
 
-## Commands (once scaffolded — Task 1)
+## Commands
 
 ```bash
 docker compose up -d          # Postgres 16 at postgres://postgres:postgres@localhost:5432/hashtag

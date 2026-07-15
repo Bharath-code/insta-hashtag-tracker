@@ -30,7 +30,7 @@ Tests: `npm test` (integration tests need the docker Postgres running)
 | SYNC_MAX_ITEMS | no | 500 | Per-sync media cap |
 | META_PAGE_SIZE | no | 50 | Graph API page size |
 
-AWS drivers use the standard AWS SDK credential chain (env vars / `~/.aws`).
+AWS drivers use the standard AWS SDK v3 credential chain (env vars / `~/.aws`). Both drivers ship in this repo (`src/queue/sqs.ts`, `S3Storage` in `src/storage/index.ts`) — set `QUEUE_DRIVER=sqs` / `STORAGE_DRIVER=s3` plus the vars above to enable them; no other AWS setup is required.
 
 ## tradeoffs
 
