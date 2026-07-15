@@ -445,7 +445,7 @@ git commit -m "feat: knex setup, initial schema migration, matcha seed"
 **Interfaces:**
 - Produces: `interface Cursor { p: string; i: string }` (`p` = posted_at ISO, `i` = media id); `encodeCursor(c: Cursor): string`; `decodeCursor(raw: string): Cursor | null` (null on any invalid input — never throws).
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `tests/cursor.test.ts`:
 ```ts
@@ -475,12 +475,12 @@ describe('cursor', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/cursor.test.ts`
 Expected: FAIL — module not found.
 
-- [ ] **Step 3: Write implementation**
+- [x] **Step 3: Write implementation**
 
 `src/services/cursor.ts`:
 ```ts
@@ -512,12 +512,12 @@ export function decodeCursor(raw: string): Cursor | null {
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run tests/cursor.test.ts`
 Expected: 4 tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
