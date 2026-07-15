@@ -29,7 +29,7 @@
 - Consumes: nothing
 - Produces: `npm run typecheck`, `npm test`, `npm run lint` all green; Postgres reachable via `docker compose up -d`.
 
-- [ ] **Step 1: Init package and install dependencies**
+- [x] **Step 1: Init package and install dependencies**
 
 ```bash
 npm init -y
@@ -38,7 +38,7 @@ npm install express knex pg zod node-cron dotenv @aws-sdk/client-s3 @aws-sdk/cli
 npm install -D typescript tsx vitest supertest @types/express @types/node @types/supertest @types/node-cron eslint @eslint/js typescript-eslint prettier eslint-config-prettier
 ```
 
-- [ ] **Step 2: Write config files**
+- [x] **Step 2: Write config files**
 
 `tsconfig.json`:
 ```json
@@ -145,13 +145,13 @@ SYNC_MAX_ITEMS=500
 META_PAGE_SIZE=50
 ```
 
-- [ ] **Step 3: Add npm scripts**
+- [x] **Step 3: Add npm scripts**
 
 ```bash
 npm pkg set scripts.typecheck="tsc --noEmit" scripts.test="vitest run" scripts.lint="eslint ." scripts.format="prettier --write ." scripts.dev:api="tsx watch src/api.ts" scripts.dev:worker="tsx watch src/worker.ts" scripts.db:migrate="tsx src/db/migrate.ts" scripts.sync:once="tsx src/scripts/sync-once.ts"
 ```
 
-- [ ] **Step 4: Verify toolchain**
+- [x] **Step 4: Verify toolchain**
 
 ```bash
 mkdir -p src tests && echo 'export {};' > src/placeholder.ts
@@ -160,7 +160,7 @@ docker compose up -d && docker compose ps
 ```
 Expected: typecheck/test/lint all exit 0 (vitest passes with no tests); postgres container `running`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
@@ -179,7 +179,7 @@ git commit -m "chore: scaffold TypeScript project with tooling and docker compos
 **Interfaces:**
 - Produces: `loadConfig(env?: NodeJS.ProcessEnv): Config` — throws on missing/invalid vars. `Config` keys mirror env var names (`DATABASE_URL`, `META_ACCESS_TOKEN`, `META_USER_ID`, `META_API_BASE`, `QUEUE_DRIVER: 'local'|'sqs'`, `STORAGE_DRIVER: 'local'|'s3'`, `SQS_QUEUE_URL?`, `S3_BUCKET?`, `AWS_REGION?`, `STORAGE_LOCAL_DIR`, `PORT: number`, `SYNC_MAX_ITEMS: number`, `META_PAGE_SIZE: number`).
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `tests/config.test.ts`:
 ```ts
@@ -216,12 +216,12 @@ describe('loadConfig', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/config.test.ts`
 Expected: FAIL — cannot find module `../src/config`.
 
-- [ ] **Step 3: Write implementation**
+- [x] **Step 3: Write implementation**
 
 `src/config.ts`:
 ```ts
@@ -262,7 +262,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
 }
 ```
 
-- [ ] **Step 4: Run tests and cleanup placeholder**
+- [x] **Step 4: Run tests and cleanup placeholder**
 
 ```bash
 rm src/placeholder.ts
@@ -270,7 +270,7 @@ npx vitest run tests/config.test.ts && npm run typecheck
 ```
 Expected: 4 tests PASS, typecheck clean.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
@@ -288,7 +288,7 @@ git commit -m "feat: zod-validated env config with driver cross-checks"
 **Interfaces:**
 - Produces: `createDb(databaseUrl: string): Knex` (migrations + seeds directories preconfigured); tables `hashtags` and `media` per spec §4; test helper `getTestDb(): Knex` and `resetDb(db: Knex): Promise<void>`.
 
-- [ ] **Step 1: Write the failing integration test**
+- [x] **Step 1: Write the failing integration test**
 
 `tests/helpers/db.ts`:
 ```ts
@@ -335,12 +335,12 @@ describe('migrations and seed', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/db.test.ts`
 Expected: FAIL — cannot find module `../../src/db`.
 
-- [ ] **Step 3: Write knex factory, migration, seed**
+- [x] **Step 3: Write knex factory, migration, seed**
 
 `src/db/index.ts`:
 ```ts
@@ -422,12 +422,12 @@ main().catch((err) => {
 });
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `docker compose up -d && npx vitest run tests/db.test.ts && npm run typecheck`
 Expected: 2 tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
@@ -445,7 +445,7 @@ git commit -m "feat: knex setup, initial schema migration, matcha seed"
 **Interfaces:**
 - Produces: `interface Cursor { p: string; i: string }` (`p` = posted_at ISO, `i` = media id); `encodeCursor(c: Cursor): string`; `decodeCursor(raw: string): Cursor | null` (null on any invalid input — never throws).
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `tests/cursor.test.ts`:
 ```ts
@@ -475,12 +475,12 @@ describe('cursor', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/cursor.test.ts`
 Expected: FAIL — module not found.
 
-- [ ] **Step 3: Write implementation**
+- [x] **Step 3: Write implementation**
 
 `src/services/cursor.ts`:
 ```ts
@@ -512,12 +512,12 @@ export function decodeCursor(raw: string): Cursor | null {
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run tests/cursor.test.ts`
 Expected: 4 tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
@@ -541,7 +541,7 @@ git commit -m "feat: opaque keyset cursor encode/decode"
   - `interface HashtagRow { id: number; name: string; meta_hashtag_id: string | null; last_synced_at: Date | null }`.
   - `class HashtagRepo { constructor(db: Knex); findByName(name: string): Promise<HashtagRow | undefined>; setMetaId(id: number, metaHashtagId: string): Promise<void>; setLastSynced(id: number): Promise<void> }`.
 
-- [ ] **Step 1: Write the failing integration test**
+- [x] **Step 1: Write the failing integration test**
 
 `tests/media-repo.test.ts`:
 ```ts
@@ -636,12 +636,12 @@ describe('HashtagRepo', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/media-repo.test.ts`
 Expected: FAIL — module not found.
 
-- [ ] **Step 3: Write implementation**
+- [x] **Step 3: Write implementation**
 
 `src/services/media-repo.ts`:
 ```ts
@@ -748,12 +748,12 @@ export class HashtagRepo {
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run tests/media-repo.test.ts && npm run typecheck`
 Expected: 5 tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
@@ -775,7 +775,7 @@ git commit -m "feat: media/hashtag repos with ON CONFLICT dedupe and keyset pagi
   - `class MetaApiError extends Error { status: number }`.
   - `class MetaClient { constructor(opts: { accessToken: string; userId: string; baseUrl: string; pageSize?: number; fetchFn?: typeof fetch; sleepFn?: (ms: number) => Promise<void> }); searchHashtag(name: string): Promise<string>; fetchHashtagMedia(hashtagId: string, edge: 'top_media' | 'recent_media', maxItems: number): AsyncGenerator<MetaMedia[]> }`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `tests/meta-client.test.ts`:
 ```ts
@@ -876,12 +876,12 @@ describe('MetaClient', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/meta-client.test.ts`
 Expected: FAIL — module not found.
 
-- [ ] **Step 3: Write implementation**
+- [x] **Step 3: Write implementation**
 
 `src/meta/client.ts`:
 ```ts
@@ -989,12 +989,12 @@ export class MetaClient {
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run tests/meta-client.test.ts && npm run typecheck`
 Expected: 6 tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
@@ -1013,7 +1013,7 @@ git commit -m "feat: Meta Graph API client with cursor pagination and backoff re
 - Consumes: `Config` (Task 2).
 - Produces: `interface Storage { put(key: string, body: Buffer, contentType?: string): Promise<void> }`; `class LocalStorage implements Storage { constructor(baseDir: string) }`; `class S3Storage implements Storage { constructor(bucket: string, region: string) }`; `createStorage(cfg: Config): Storage`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `tests/storage.test.ts`:
 ```ts
@@ -1047,12 +1047,12 @@ describe('createStorage', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/storage.test.ts`
 Expected: FAIL — module not found.
 
-- [ ] **Step 3: Write implementation**
+- [x] **Step 3: Write implementation**
 
 `src/storage/index.ts`:
 ```ts
@@ -1101,12 +1101,12 @@ export function createStorage(cfg: Config): Storage {
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run tests/storage.test.ts && npm run typecheck`
 Expected: 3 tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
@@ -1131,7 +1131,7 @@ git commit -m "feat: storage abstraction with local and S3 drivers"
   - `createQueue(cfg: Config): Queue`
 - `LocalQueue` (in `local.ts`): in-memory FIFO, drains sequentially, retries a failed job up to 3 attempts, `flush(): Promise<void>` awaits drain (used by tests and sync-once script).
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `tests/queue.test.ts`:
 ```ts
@@ -1183,12 +1183,12 @@ describe('createQueue', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/queue.test.ts`
 Expected: FAIL — module not found.
 
-- [ ] **Step 3: Write implementation**
+- [x] **Step 3: Write implementation**
 
 `src/queue/index.ts`:
 ```ts
@@ -1345,12 +1345,12 @@ export class SqsQueue implements Queue {
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run tests/queue.test.ts && npm run typecheck`
 Expected: 4 tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
@@ -1372,7 +1372,7 @@ git commit -m "feat: queue abstraction with retrying LocalQueue and SQS driver"
   - `interface SyncDeps { hashtags: Pick<HashtagRepo, 'findByName' | 'setLastSynced'>; media: Pick<MediaRepo, 'upsertBatch' | 'findPendingAssets' | 'setStorageKey'>; meta: Pick<MetaClient, 'fetchHashtagMedia'>; storage: Storage; maxItems: number; assetConcurrency?: number; fetchFn?: typeof fetch }`.
   - `class SyncService { constructor(deps: SyncDeps); run(job: Job): Promise<void> }`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `tests/sync.test.ts`:
 ```ts
@@ -1476,12 +1476,12 @@ describe('SyncService', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/sync.test.ts`
 Expected: FAIL — module not found.
 
-- [ ] **Step 3: Write implementation**
+- [x] **Step 3: Write implementation**
 
 `src/services/sync.ts`:
 ```ts
@@ -1556,12 +1556,12 @@ export class SyncService {
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run tests/sync.test.ts && npm run typecheck`
 Expected: 6 tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
@@ -1580,7 +1580,7 @@ git commit -m "feat: sync service — page-wise upsert and resumable asset uploa
 - Consumes: `MediaRepo` (Task 5), `encodeCursor`/`decodeCursor` (Task 4), `createDb` (Task 3), `loadConfig` (Task 2).
 - Produces: `createApp(db: Knex): Express` — `GET /health` → `{ ok: true }`; `GET /hashtags?limit&cursor` → `{ data: MediaRow[], nextCursor: string | null }`, 400 on invalid cursor, limit clamped 1–100 (default 20), central JSON error handler.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `tests/api.test.ts`:
 ```ts
@@ -1644,12 +1644,12 @@ describe('GET /hashtags', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/api.test.ts`
 Expected: FAIL — module not found.
 
-- [ ] **Step 3: Write implementation**
+- [x] **Step 3: Write implementation**
 
 `src/app.ts`:
 ```ts
@@ -1719,12 +1719,12 @@ app.listen(cfg.PORT, () => {
 
 Note: the error handler middleware must keep the unused `_next` parameter — Express identifies error handlers by arity (4 params). Add `// eslint-disable-next-line @typescript-eslint/no-unused-vars` above it if lint complains.
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run tests/api.test.ts && npm run typecheck && npm run lint`
 Expected: 4 tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
@@ -1746,7 +1746,7 @@ git commit -m "feat: express app with cursor-paginated GET /hashtags"
   - `npm run dev:worker` starts consumer + cron `0 */3 * * *`; enqueues `JOB_SYNC_TOP` once when `last_synced_at` is null, and `JOB_SYNC_RECENT` at startup and on each cron tick.
   - `npm run sync:once` runs one recent sync directly (no queue) and exits.
 
-- [ ] **Step 1: Write the failing test (hashtag-id caching logic)**
+- [x] **Step 1: Write the failing test (hashtag-id caching logic)**
 
 `tests/bootstrap.test.ts`:
 ```ts
@@ -1787,12 +1787,12 @@ describe('ensureHashtag', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/bootstrap.test.ts`
 Expected: FAIL — module not found.
 
-- [ ] **Step 3: Write bootstrap, worker, and script**
+- [x] **Step 3: Write bootstrap, worker, and script**
 
 `src/bootstrap.ts`:
 ```ts
@@ -1899,7 +1899,7 @@ main().catch((err) => {
 });
 ```
 
-- [ ] **Step 4: Run tests, then smoke-test end to end**
+- [x] **Step 4: Run tests, then smoke-test end to end**
 
 ```bash
 npx vitest run && npm run typecheck && npm run lint
@@ -1920,7 +1920,7 @@ curl 'http://localhost:3000/hashtags?limit=5'
 ```
 Expected: JSON `{ data: [...], nextCursor }` newest-first.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
@@ -1939,7 +1939,7 @@ git commit -m "feat: worker with cron scheduling, shared bootstrap, sync-once sc
 - Consumes: the finished system.
 - Produces: assignment deliverables per problem_statement.md.
 
-- [ ] **Step 1: Write instructions.md**
+- [x] **Step 1: Write instructions.md**
 
 Must contain exactly these headers (assignment requirement): `setup`, `vars`, `tradeoffs`, `ai-usage`.
 
@@ -1996,7 +1996,7 @@ See `docs/ENGINEERING.md` §10 for the full ledger. Highlights:
 
 Adjust the ai-usage section to reflect what actually happened during the build.
 
-- [ ] **Step 2: Create ai-usage folder**
+- [x] **Step 2: Create ai-usage folder**
 
 `ai-usage/README.md`:
 ```markdown
@@ -2009,11 +2009,11 @@ Claude Code session exports for this assignment. Sensitive values (tokens) redac
 
 Remind the user to export the session: in Claude Code run `/export` and save to `ai-usage/session-design-and-build.md`, then scrub the Meta token from the export (`sed -i '' 's/EAAM[A-Za-z0-9]*/<REDACTED_META_TOKEN>/g' ai-usage/*.md`).
 
-- [ ] **Step 3: Reconcile docs/ENGINEERING.md with reality**
+- [x] **Step 3: Reconcile docs/ENGINEERING.md with reality**
 
 Read `docs/ENGINEERING.md` and fix anything the implementation changed (file names, retry counts, behavior). It is a living doc — it must match the shipped code.
 
-- [ ] **Step 4: Final verification**
+- [x] **Step 4: Final verification**
 
 ```bash
 npm test && npm run typecheck && npm run lint
@@ -2021,7 +2021,7 @@ git grep -l "EAAM" -- ':!problem_statement.md' || echo "no leaked tokens"
 ```
 Expected: suite green; no token leaked outside problem_statement.md (consider redacting it there too before pushing).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
