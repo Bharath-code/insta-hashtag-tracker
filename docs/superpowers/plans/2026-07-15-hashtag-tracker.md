@@ -179,7 +179,7 @@ git commit -m "chore: scaffold TypeScript project with tooling and docker compos
 **Interfaces:**
 - Produces: `loadConfig(env?: NodeJS.ProcessEnv): Config` — throws on missing/invalid vars. `Config` keys mirror env var names (`DATABASE_URL`, `META_ACCESS_TOKEN`, `META_USER_ID`, `META_API_BASE`, `QUEUE_DRIVER: 'local'|'sqs'`, `STORAGE_DRIVER: 'local'|'s3'`, `SQS_QUEUE_URL?`, `S3_BUCKET?`, `AWS_REGION?`, `STORAGE_LOCAL_DIR`, `PORT: number`, `SYNC_MAX_ITEMS: number`, `META_PAGE_SIZE: number`).
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `tests/config.test.ts`:
 ```ts
@@ -216,12 +216,12 @@ describe('loadConfig', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/config.test.ts`
 Expected: FAIL — cannot find module `../src/config`.
 
-- [ ] **Step 3: Write implementation**
+- [x] **Step 3: Write implementation**
 
 `src/config.ts`:
 ```ts
@@ -262,7 +262,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
 }
 ```
 
-- [ ] **Step 4: Run tests and cleanup placeholder**
+- [x] **Step 4: Run tests and cleanup placeholder**
 
 ```bash
 rm src/placeholder.ts
@@ -270,7 +270,7 @@ npx vitest run tests/config.test.ts && npm run typecheck
 ```
 Expected: 4 tests PASS, typecheck clean.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
