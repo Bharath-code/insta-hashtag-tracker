@@ -5,5 +5,6 @@ export default defineConfig({
     include: ['tests/**/*.test.ts'],
     passWithNoTests: true,
     fileParallelism: false,
+    setupFiles: ['tsx/cjs'],
   },
 });
