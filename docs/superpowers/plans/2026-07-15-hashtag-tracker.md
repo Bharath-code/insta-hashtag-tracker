@@ -775,7 +775,7 @@ git commit -m "feat: media/hashtag repos with ON CONFLICT dedupe and keyset pagi
   - `class MetaApiError extends Error { status: number }`.
   - `class MetaClient { constructor(opts: { accessToken: string; userId: string; baseUrl: string; pageSize?: number; fetchFn?: typeof fetch; sleepFn?: (ms: number) => Promise<void> }); searchHashtag(name: string): Promise<string>; fetchHashtagMedia(hashtagId: string, edge: 'top_media' | 'recent_media', maxItems: number): AsyncGenerator<MetaMedia[]> }`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `tests/meta-client.test.ts`:
 ```ts
@@ -876,12 +876,12 @@ describe('MetaClient', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `npx vitest run tests/meta-client.test.ts`
 Expected: FAIL — module not found.
 
-- [ ] **Step 3: Write implementation**
+- [x] **Step 3: Write implementation**
 
 `src/meta/client.ts`:
 ```ts
@@ -989,12 +989,12 @@ export class MetaClient {
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run tests/meta-client.test.ts && npm run typecheck`
 Expected: 6 tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A
