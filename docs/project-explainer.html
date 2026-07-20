@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Instagram Hashtag Tracker — Project Explainer</title>
+<style>
+  :root {
+    --bg: #0b0f14;
+    --bg-elev: #121820;
+    --bg-card: #161d27;
+    --bg-hover: #1c2533;
+    --border: #243041;
+    --border-strong: #334155;
+    --text: #e8eef6;
+    --muted: #94a3b8;
+    --dim: #64748b;
+    --accent: #34d399;
+    --accent-dim: rgba(52, 211, 153, 0.12);
+    --accent-border: rgba(52, 211, 153, 0.35);
+    --blue: #60a5fa;
+    --blue-dim: rgba(96, 165, 250, 0.12);
+    --amber: #fbbf24;
+    --amber-dim: rgba(251, 191, 36, 0.12);
+    --rose: #fb7185;
+    --rose-dim: rgba(251, 113, 133, 0.12);
+    --violet: #a78bfa;
+    --violet-dim: rgba(167, 139, 250, 0.12);
+    --radius: 14px;
+    --shadow: 0 12px 40px rgba(0,0,0,0.35);
+    --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font);
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(52,211,153,0.08), transparent 50%),
+      radial-gradient(900px 500px at 90% 0%, rgba(96,165,250,0.07), transparent 45%),
+      var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    min-height: 100vh;
+  }
+
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .shell {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+  }
+
+  /* Header */
+  header.hero {
+    display: grid;
+    gap: 18px;
+    margin-bottom: 28px;
+    padding: 28px 28px 24px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: linear-gradient(160deg, rgba(22,29,39,0.95), rgba(12,16,22,0.98));
+    box-shadow: var(--shadow);
+  }
+  .badge-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .badge {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: var(--bg-elev);
+  }
+  .badge.ok { color: var(--accent); border-color: var(--accent-border); background: var(--accent-dim); }
+  .badge.info { color: var(--blue); border-color: rgba(96,165,250,0.35); background: var(--blue-dim); }
+  .badge.warn { color: var(--amber); border-color: rgba(251,191,36,0.35); background: var(--amber-dim); }
+
+  h1 {
+    font-size: clamp(1.6rem, 3vw, 2.15rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .subtitle { color: var(--muted); max-width: 68ch; font-size: 1.02rem; }
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 28px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+  .stat { display: grid; gap: 2px; }
+  .stat b { font-size: 1.15rem; color: var(--text); }
+  .stat span { font-size: 12px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* Nav tabs */
+  nav.tabs {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 10px 0 14px;
+    margin-bottom: 8px;
+    background: linear-gradient(var(--bg) 70%, transparent);
+    backdrop-filter: blur(8px);
+  }
+  .tab {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--muted);
+    padding: 10px 14px;
+    border-radius: 999px;
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.15s ease;
+  }
+  .tab:hover { background: var(--bg-hover); color: var(--text); }
+  .tab.active {
+    color: #04120c;
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  section.panel { display: none; animation: fade 0.22s ease; }
+  section.panel.active { display: block; }
+  @keyframes fade {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  h2 {
+    font-size: 1.35rem;
+    margin: 8px 0 12px;
+    letter-spacing: -0.01em;
+  }
+  h3 {
+    font-size: 1.02rem;
+    margin: 0 0 8px;
+  }
+  p { color: var(--muted); margin-bottom: 12px; }
+  .lead { font-size: 1.05rem; color: #c5d0de; }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+  @media (max-width: 800px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+  }
+  .card.accent { border-color: var(--accent-border); background: linear-gradient(180deg, var(--accent-dim), var(--bg-card)); }
+  .card.blue { border-color: rgba(96,165,250,0.3); background: linear-gradient(180deg, var(--blue-dim), var(--bg-card)); }
+  .card.amber { border-color: rgba(251,191,36,0.3); background: linear-gradient(180deg, var(--amber-dim), var(--bg-card)); }
+  .card.violet { border-color: rgba(167,139,250,0.3); background: linear-gradient(180deg, var(--violet-dim), var(--bg-card)); }
+
+  .card .kicker {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--dim);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  ul.clean { list-style: none; display: grid; gap: 8px; }
+  ul.clean li {
+    position: relative;
+    padding-left: 16px;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  ul.clean li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0.55em;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.8;
+  }
+
+  code, .mono {
+    font-family: var(--mono);
+    font-size: 0.88em;
+  }
+  code {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 6px;
+    color: #dbeafe;
+  }
+
+  /* Architecture diagram */
+  .arch {
+    display: grid;
+    gap: 10px;
+    margin: 16px 0 20px;
+  }
+  .arch-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: stretch;
+    justify-content: center;
+  }
+  .node {
+    min-width: 140px;
+    flex: 1 1 140px;
+    max-width: 220px;
+    border: 1px solid var(--border);
+    background: var(--bg-elev);
+    border-radius: 12px;
+    padding: 12px 14px;
+    text-align: center;
+    transition: 0.15s ease;
+    cursor: pointer;
+  }
+  .node:hover, .node.selected {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent-border), 0 8px 24px rgba(0,0,0,0.25);
+    transform: translateY(-2px);
+  }
+  .node .title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+  .node .sub { font-size: 12px; color: var(--dim); }
+  .node.api { border-color: rgba(96,165,250,0.4); }
+  .node.worker { border-color: rgba(52,211,153,0.4); }
+  .node.ext { border-color: rgba(251,191,36,0.35); }
+  .node.db { border-color: rgba(167,139,250,0.4); }
+  .arrow {
+    text-align: center;
+    color: var(--dim);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    padding: 2px 0;
+  }
+  .node-detail {
+    margin-top: 4px;
+    min-height: 88px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px dashed var(--border-strong);
+    color: var(--muted);
+    background: rgba(0,0,0,0.15);
+  }
+  .node-detail strong { color: var(--text); }
+
+  /* Flow stepper */
+  .flow-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin: 10px 0 16px;
+  }
+  .btn {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--bg-hover);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 9px 14px;
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn:hover { border-color: var(--border-strong); }
+  .btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #04120c;
+  }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .step-indicator {
+    color: var(--dim);
+    font-size: 13px;
+    margin-left: auto;
+  }
+
+  .timeline {
+    display: grid;
+    gap: 0;
+    position: relative;
+  }
+  .step {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 12px;
+    padding: 0 0 18px;
+    opacity: 0.38;
+    transition: 0.2s ease;
+  }
+  .step.visible { opacity: 1; }
+  .step.active .step-body {
+    border-color: var(--accent-border);
+    background: linear-gradient(180deg, var(--accent-dim), var(--bg-card));
+  }
+  .rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--border-strong);
+    background: var(--bg-elev);
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--dim);
+    z-index: 1;
+  }
+  .step.active .dot, .step.done .dot {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #04120c;
+  }
+  .rail::after {
+    content: "";
+    flex: 1;
+    width: 2px;
+    background: var(--border);
+    margin-top: 4px;
+  }
+  .step:last-child .rail::after { display: none; }
+  .step-body {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    background: var(--bg-card);
+  }
+  .step-body h4 { margin-bottom: 6px; font-size: 0.98rem; }
+  .step-body p { margin: 0; font-size: 0.93rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .chip {
+    font-size: 11px;
+    font-family: var(--mono);
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: #cbd5e1;
+  }
+
+  /* Practice score */
+  .scoreboard {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  @media (max-width: 700px) {
+    .scoreboard { grid-template-columns: 1fr; }
+  }
+  .score-ring {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-center {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    text-align: center;
+  }
+  .score-center b { font-size: 2rem; line-height: 1; }
+  .score-center span { font-size: 12px; color: var(--dim); }
+
+  .practice-list { display: grid; gap: 8px; }
+  .practice {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    align-items: start;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    cursor: pointer;
+    text-align: left;
+    color: inherit;
+    font: inherit;
+  }
+  .practice:hover { background: var(--bg-hover); }
+  .practice.open { border-color: var(--border-strong); }
+  .mark {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 800;
+    margin-top: 1px;
+  }
+  .mark.yes { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+  .mark.partial { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(251,191,36,0.35); }
+  .mark.no { background: var(--rose-dim); color: var(--rose); border: 1px solid rgba(251,113,133,0.35); }
+  .practice .body strong { display: block; margin-bottom: 2px; }
+  .practice .body span { color: var(--muted); font-size: 0.9rem; }
+  .practice .detail {
+    grid-column: 1 / -1;
+    display: none;
+    color: var(--muted);
+    font-size: 0.9rem;
+    padding-top: 4px;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+  }
+  .practice.open .detail { display: block; }
+  .toggle-icon { color: var(--dim); font-size: 18px; line-height: 1; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th { color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
+  td { color: var(--muted); }
+  td:first-child { color: var(--text); font-weight: 600; }
+
+  .stack-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0 18px;
+  }
+  .pill {
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg-elev);
+    font-size: 13px;
+  }
+  .pill b { color: var(--accent); font-weight: 700; margin-right: 6px; }
+
+  .schema {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 8px;
+  }
+  @media (max-width: 700px) { .schema { grid-template-columns: 1fr; } }
+  .table-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--bg-elev);
+  }
+  .table-card header {
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid var(--border);
+    font-weight: 700;
+    font-family: var(--mono);
+    font-size: 0.9rem;
+  }
+  .field {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    padding: 8px 14px;
+    border-bottom: 1px solid rgba(36,48,65,0.7);
+    font-size: 0.88rem;
+  }
+  .field:last-child { border-bottom: 0; }
+  .field .name { font-family: var(--mono); color: #dbeafe; }
+  .field .type { color: var(--dim); font-size: 12px; }
+  .field.pk .name::after {
+    content: " PK";
+    color: var(--amber);
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .field.fk .name::after {
+    content: " FK";
+    color: var(--violet);
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .callout {
+    border-left: 3px solid var(--accent);
+    padding: 12px 14px;
+    background: var(--accent-dim);
+    border-radius: 0 10px 10px 0;
+    color: var(--muted);
+    margin: 14px 0;
+    font-size: 0.95rem;
+  }
+  .callout.warn { border-left-color: var(--amber); background: var(--amber-dim); }
+  .callout strong { color: var(--text); }
+
+  footer.note {
+    margin-top: 36px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    color: var(--dim);
+    font-size: 13px;
+  }
+
+  .kbd {
+    font-family: var(--mono);
+    font-size: 11px;
+    border: 1px solid var(--border-strong);
+    padding: 2px 6px;
+    border-radius: 5px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="hero">
+    <div class="badge-row">
+      <span class="badge ok">Implementation complete</span>
+      <span class="badge info">Take-home assignment</span>
+      <span class="badge">Node · TypeScript · Postgres · Express</span>
+      <span class="badge warn">Tracks #matcha</span>
+    </div>
+    <div>
+      <h1>Instagram Hashtag Tracker</h1>
+      <p class="subtitle" style="margin-top:10px">
+        An ingestion pipeline that pulls Instagram media for the <code>matcha</code> hashtag
+        from the Meta Graph API, stores metadata in Postgres, copies assets to durable storage,
+        and serves one cursor-paginated read API.
+      </p>
+    </div>
+    <div class="hero-meta">
+      <div class="stat"><b>2</b><span>Processes (API + Worker)</span></div>
+      <div class="stat"><b>2</b><span>Abstractions (Queue + Storage)</span></div>
+      <div class="stat"><b>1</b><span>Public endpoint</span></div>
+      <div class="stat"><b>3h</b><span>Sync cadence (recent)</span></div>
+      <div class="stat"><b>500</b><span>Max media per sync</span></div>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab active" data-tab="overview" role="tab">Overview</button>
+    <button class="tab" data-tab="build" role="tab">How it's built</button>
+    <button class="tab" data-tab="flow" role="tab">Product flow</button>
+    <button class="tab" data-tab="data" role="tab">Data model</button>
+    <button class="tab" data-tab="practices" role="tab">Best practices</button>
+    <button class="tab" data-tab="tradeoffs" role="tab">Tradeoffs</button>
+  </nav>
+
+  <!-- OVERVIEW -->
+  <section class="panel active" id="overview">
+    <h2>What this product does</h2>
+    <p class="lead">
+      Keep a durable, queryable feed of Instagram posts tagged <strong style="color:var(--text)">#matcha</strong>,
+      refreshed automatically, without depending on Meta's short-lived CDN URLs.
+    </p>
+
+    <div class="grid-3" style="margin-top:16px">
+      <div class="card accent">
+        <div class="kicker">Ingest</div>
+        <h3>Fetch from Meta</h3>
+        <p style="margin:0">Worker pulls <code>top_media</code> once and <code>recent_media</code> every 3 hours via Graph API, paginated 50/page up to 500 items.</p>
+      </div>
+      <div class="card blue">
+        <div class="kicker">Persist</div>
+        <h3>Upsert + copy assets</h3>
+        <p style="margin:0">Metadata lands in Postgres with Meta media ID as PK. Binary assets are copied to S3 or <code>./storage/</code> because CDN URLs expire.</p>
+      </div>
+      <div class="card violet">
+        <div class="kicker">Serve</div>
+        <h3>Read API only</h3>
+        <p style="margin:0">Stateless Express exposes <code>GET /hashtags?limit&amp;cursor</code> — newest <code>posted_at</code> first, keyset pagination, no writes.</p>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:18px">
+      <strong>Why two processes?</strong>
+      Ingestion is bursty (hundreds of downloads per sync). The API stays read-only and scalable on its own so a heavy sync never slows feed responses.
+    </div>
+
+    <h2 style="margin-top:24px">Quick run (reviewer path)</h2>
+    <div class="card">
+      <ul class="clean">
+        <li><code>docker compose up -d</code> → Postgres 16</li>
+        <li><code>cp .env.example .env</code> → Meta token + user id</li>
+        <li><code>npm install && npm run db:migrate</code> → schema + matcha seed</li>
+        <li><code>npm run dev:worker</code> → consume queue + cron</li>
+        <li><code>npm run dev:api</code> → <code>GET http://localhost:3000/hashtags?limit=10</code></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- BUILD -->
+  <section class="panel" id="build">
+    <h2>How it's built</h2>
+    <p class="lead">One TypeScript codebase, two entry points, exactly two pluggable drivers. Everything else is concrete on purpose.</p>
+
+    <div class="stack-bar">
+      <div class="pill"><b>Runtime</b> Node 20+ · TS strict · CommonJS</div>
+      <div class="pill"><b>API</b> Express 5</div>
+      <div class="pill"><b>DB</b> Postgres 16 · Knex</div>
+      <div class="pill"><b>Queue</b> SQS / LocalQueue</div>
+      <div class="pill"><b>Storage</b> S3 / local files</div>
+      <div class="pill"><b>Validate</b> zod</div>
+      <div class="pill"><b>Test</b> Vitest · supertest</div>
+    </div>
+
+    <h3 style="margin-bottom:10px">Click a box to inspect the architecture</h3>
+    <div class="arch">
+      <div class="arch-row">
+        <div class="node ext" data-node="cron"><div class="title">node-cron</div><div class="sub">every 3h · in worker</div></div>
+        <div class="node worker" data-node="queue"><div class="title">Queue</div><div class="sub">Local or SQS</div></div>
+        <div class="node worker" data-node="worker"><div class="title">Worker</div><div class="sub">src/worker.ts</div></div>
+      </div>
+      <div class="arrow">▼ sync: fetch → upsert → upload</div>
+      <div class="arch-row">
+        <div class="node ext" data-node="meta"><div class="title">Meta Graph API</div><div class="sub">top + recent media</div></div>
+        <div class="node db" data-node="postgres"><div class="title">Postgres</div><div class="sub">hashtags · media</div></div>
+        <div class="node ext" data-node="storage"><div class="title">Storage</div><div class="sub">S3 or ./storage</div></div>
+      </div>
+      <div class="arrow">▼ keyset read</div>
+      <div class="arch-row">
+        <div class="node api" data-node="api"><div class="title">Express API</div><div class="sub">src/api.ts · GET /hashtags</div></div>
+        <div class="node ext" data-node="client"><div class="title">Clients</div><div class="sub">curl · consumers</div></div>
+      </div>
+      <div class="node-detail" id="node-detail">
+        <strong>Tip:</strong> Click any box above. Start with <em>Worker</em> or <em>Postgres</em> — those hold the load-bearing design choices.
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:8px">
+      <div class="card">
+        <div class="kicker">Source map</div>
+        <h3>Key files</h3>
+        <ul class="clean">
+          <li><code>src/api.ts</code> / <code>app.ts</code> — HTTP surface</li>
+          <li><code>src/worker.ts</code> — queue consumer + cron</li>
+          <li><code>src/services/sync.ts</code> — fetch → upsert → upload</li>
+          <li><code>src/meta/client.ts</code> — Graph client + retries</li>
+          <li><code>src/services/media-repo.ts</code> — upserts + keyset query</li>
+          <li><code>src/services/cursor.ts</code> — opaque cursor codec</li>
+          <li><code>src/queue/*</code> · <code>src/storage/*</code> — drivers</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="kicker">Design rule</div>
+        <h3>Only two interfaces</h3>
+        <p>
+          <code>Queue</code> and <code>Storage</code> each have AWS + local drivers selected by
+          <code>QUEUE_DRIVER</code> / <code>STORAGE_DRIVER</code>.
+        </p>
+        <p style="margin:0">
+          No repository-over-ORM, no DI container, no speculative interfaces.
+          Docs explicitly reject premature abstraction common in take-homes.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FLOW -->
+  <section class="panel" id="flow">
+    <h2>Product flow</h2>
+    <p class="lead">Walk the happy path of a sync job and how a client reads the feed. Use the controls or keyboard <span class="kbd">←</span> <span class="kbd">→</span> when this tab is open.</p>
+
+    <div class="flow-controls">
+      <button class="btn" id="flow-prev">← Previous</button>
+      <button class="btn primary" id="flow-next">Next →</button>
+      <button class="btn" id="flow-play">▶ Auto-play</button>
+      <button class="btn" id="flow-reset">Reset</button>
+      <span class="step-indicator" id="flow-label">Step 1 of 8</span>
+    </div>
+
+    <div class="timeline" id="timeline"></div>
+
+    <div class="callout warn" style="margin-top:8px">
+      <strong>Idempotency is the product guarantee.</strong>
+      SQS is at-least-once. Replaying a job re-upserts the same media IDs and only uploads rows still missing <code>storage_key</code>. Retries finish partial work; they don't create duplicates.
+    </div>
+  </section>
+
+  <!-- DATA -->
+  <section class="panel" id="data">
+    <h2>Data model</h2>
+    <p class="lead">Two tables. Dedupe and pagination correctness live in the schema, not application “exists?” checks.</p>
+
+    <div class="schema">
+      <div class="table-card">
+        <header>hashtags</header>
+        <div class="field pk"><span class="name">id</span><span class="type">serial</span></div>
+        <div class="field"><span class="name">name</span><span class="type">text unique · seeded matcha</span></div>
+        <div class="field"><span class="name">meta_hashtag_id</span><span class="type">text · cached Graph id</span></div>
+        <div class="field"><span class="name">last_synced_at</span><span class="type">timestamptz</span></div>
+        <div class="field"><span class="name">created_at / updated_at</span><span class="type">timestamptz</span></div>
+      </div>
+      <div class="table-card">
+        <header>media</header>
+        <div class="field pk"><span class="name">id</span><span class="type">text · Meta media ID</span></div>
+        <div class="field fk"><span class="name">hashtag_id</span><span class="type">→ hashtags.id</span></div>
+        <div class="field"><span class="name">caption · media_type · permalink</span><span class="type">text</span></div>
+        <div class="field"><span class="name">media_url</span><span class="type">Meta CDN (expires)</span></div>
+        <div class="field"><span class="name">storage_key</span><span class="type">nullable until upload</span></div>
+        <div class="field"><span class="name">like_count · comments_count</span><span class="type">int · refreshed</span></div>
+        <div class="field"><span class="name">posted_at</span><span class="type">sort key · Instagram time</span></div>
+        <div class="field"><span class="name">source</span><span class="type">top | recent</span></div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:16px">
+      <div class="card amber">
+        <div class="kicker">Index</div>
+        <h3><code>(posted_at DESC, id DESC)</code></h3>
+        <p style="margin:0">Matches the keyset query exactly: <code>WHERE (posted_at, id) &lt; (cursor)</code>. Feed sort is Instagram post time, not ingestion time.</p>
+      </div>
+      <div class="card accent">
+        <div class="kicker">Upsert</div>
+        <h3><code>ON CONFLICT (id) DO UPDATE</code></h3>
+        <p style="margin:0">Refreshes like/comment counts. Same post in top + recent → one row. Concurrent workers safe without read-before-write.</p>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:16px">
+      <strong>Left out on purpose:</strong> owner/username (hashtag API doesn't return it), carousel children as separate rows, raw JSONB payload. Scope stays tight for the assignment.
+    </div>
+  </section>
+
+  <!-- PRACTICES -->
+  <section class="panel" id="practices">
+    <h2>Does it follow best practices?</h2>
+    <p class="lead">
+      For a take-home ingestion pipeline: <strong style="color:var(--text)">yes, strongly</strong> —
+      especially around failure modes, idempotency, and resisting over-engineering.
+      Production gaps are documented, not ignored.
+    </p>
+
+    <div class="scoreboard">
+      <div class="score-ring">
+        <svg width="160" height="160" viewBox="0 0 160 160" aria-hidden="true">
+          <circle cx="80" cy="80" r="68" fill="none" stroke="#1e293b" stroke-width="12" />
+          <circle id="score-arc" cx="80" cy="80" r="68" fill="none" stroke="#34d399" stroke-width="12"
+            stroke-linecap="round" stroke-dasharray="427" stroke-dashoffset="427" />
+        </svg>
+        <div class="score-center">
+          <div><b id="score-num">—</b><br /><span>practice score</span></div>
+        </div>
+      </div>
+      <div>
+        <p style="margin:0 0 10px">
+          Scored against common backend standards for this class of system (not against a full SaaS platform).
+          Click any row for the “why”.
+        </p>
+        <div class="badge-row">
+          <span class="badge ok">Strong: data integrity</span>
+          <span class="badge ok">Strong: separation of concerns</span>
+          <span class="badge info">Good: test strategy</span>
+          <span class="badge warn">Honest gaps: ops/observability</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="practice-list" id="practice-list"></div>
+  </section>
+
+  <!-- TRADEOFFS -->
+  <section class="panel" id="tradeoffs">
+    <h2>Tradeoffs & scale path</h2>
+    <p class="lead">Shortcuts are intentional and mapped to production fixes. That's itself a best practice for assignment scope.</p>
+
+    <div class="card" style="overflow:auto">
+      <table>
+        <thead>
+          <tr><th>Choice</th><th>Why OK here</th><th>Production upgrade</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>node-cron in worker</td>
+            <td>Repo runs with one npm script; cron only enqueues</td>
+            <td>EventBridge → SQS</td>
+          </tr>
+          <tr>
+            <td>No DLQ</td>
+            <td>Low volume; failures in logs</td>
+            <td>SQS redrive policy</td>
+          </tr>
+          <tr>
+            <td>No metrics/tracing</td>
+            <td>Out of assignment scope</td>
+            <td>CloudWatch / OpenTelemetry</td>
+          </tr>
+          <tr>
+            <td>Single hashtag seeded</td>
+            <td>Spec tracks matcha only</td>
+            <td>Admin CRUD + per-hashtag schedule</td>
+          </tr>
+          <tr>
+            <td>Token in env, no refresh</td>
+            <td>Static assignment token</td>
+            <td>Secrets Manager + refresh flow</td>
+          </tr>
+          <tr>
+            <td>500-item sync cap</td>
+            <td>Explicit bound vs infinite viral feeds</td>
+            <td>Cursor checkpoint across syncs</td>
+          </tr>
+          <tr>
+            <td>Carousel flattened</td>
+            <td>Read API doesn't need children</td>
+            <td><code>media_children</code> table</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:22px">Scale path (already accommodated)</h3>
+    <div class="grid-2">
+      <div class="card">
+        <ul class="clean">
+          <li>More hashtags — schema ready (FK on media)</li>
+          <li>Worker → Lambda — handler is already <code>(job) ⇒ Promise</code></li>
+          <li>API horizontal scale — stateless reads only</li>
+          <li>Assets via CloudFront in front of S3</li>
+        </ul>
+      </div>
+      <div class="card">
+        <ul class="clean">
+          <li>Hashtag ID cached — Meta 30 searches / 7 days limit</li>
+          <li>Meta client retries 429/5xx (3× backoff); 4xx fail-fast</li>
+          <li>Asset failures log &amp; skip — never kill the batch</li>
+          <li>Env validated with zod at boot — fail fast</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="note">
+    Generated from this repo’s README, <code>docs/ENGINEERING.md</code>, and source layout.
+    Open this file in a browser: <code>docs/project-explainer.html</code>
+  </footer>
+</div>
+
+<script>
+  /* ---------- Tabs ---------- */
+  const tabs = document.querySelectorAll('.tab');
+  const panels = document.querySelectorAll('.panel');
+  function showTab(id) {
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === id));
+    panels.forEach(p => p.classList.toggle('active', p.id === id));
+    history.replaceState(null, '', '#' + id);
+  }
+  tabs.forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
+  const initial = location.hash.slice(1);
+  if ([...panels].some(p => p.id === initial)) showTab(initial);
+
+  /* ---------- Architecture nodes ---------- */
+  const nodeInfo = {
+    cron: {
+      title: 'node-cron',
+      body: 'Runs inside the worker process. Every 3 hours it only enqueues <code>SYNC_RECENT_HASHTAG_MEDIA</code>. Production can replace this with EventBridge without changing the consumer.'
+    },
+    queue: {
+      title: 'Queue',
+      body: 'Abstraction with <code>LocalQueue</code> (in-memory, bounded retries) and <code>SqsQueue</code> (AWS SDK v3). Decouples schedule from execution and enables at-least-once redelivery.'
+    },
+    worker: {
+      title: 'Worker',
+      body: 'Only process that talks to Meta and Storage. Consumes jobs, runs <code>SyncService</code> (fetch pages → upsert → upload pending assets), updates <code>last_synced_at</code>.'
+    },
+    meta: {
+      title: 'Meta Graph API',
+      body: 'Resolves hashtag ID once (quota: 30 unique searches / 7 days), then pages <code>top_media</code> / <code>recent_media</code>. Client retries 429/5xx with exponential backoff; 4xx fails immediately.'
+    },
+    postgres: {
+      title: 'Postgres',
+      body: 'Source of truth. Meta media ID is PK → natural dedupe via upsert. Keyset index on <code>(posted_at, id)</code>. Nullable <code>storage_key</code> makes asset upload resumable.'
+    },
+    storage: {
+      title: 'Storage',
+      body: 'Why it exists: Meta <code>media_url</code> expires. Copies binaries to S3 or local disk. One failed asset logs and continues; next sync retries rows where <code>storage_key IS NULL</code>.'
+    },
+    api: {
+      title: 'Express API',
+      body: 'Stateless, DB-read only. <code>GET /hashtags?limit&amp;cursor</code> returns media newest-first. Invalid cursor → 400. Limit clamped 1–100. No Meta calls on the request path.'
+    },
+    client: {
+      title: 'Clients',
+      body: 'Treat cursor as opaque base64url. Pass it back as <code>cursor</code> for the next page. Do not parse or invent cursors — encoding can change server-side.'
+    }
+  };
+  const detail = document.getElementById('node-detail');
+  document.querySelectorAll('.node').forEach(n => {
+    n.addEventListener('click', () => {
+      document.querySelectorAll('.node').forEach(x => x.classList.remove('selected'));
+      n.classList.add('selected');
+      const info = nodeInfo[n.dataset.node];
+      detail.innerHTML = `<strong>${info.title}</strong><br>${info.body}`;
+    });
+  });
+
+  /* ---------- Product flow ---------- */
+  const steps = [
+    {
+      title: 'Bootstrap / seed',
+      body: 'Migrate schema and seed hashtag row <code>matcha</code>. On first worker boot, resolve Meta hashtag ID once and cache it in <code>hashtags.meta_hashtag_id</code>.',
+      chips: ['db:migrate', 'ig_hashtag_search', 'cache meta_hashtag_id']
+    },
+    {
+      title: 'Schedule a job',
+      body: 'Cron (or first-run bootstrap) enqueues a sync job: top media initially, then recent media every 3 hours. Payload includes hashtag name + Meta hashtag id.',
+      chips: ['SYNC_TOP_HASHTAG_MEDIA', 'SYNC_RECENT_HASHTAG_MEDIA', 'every 3h']
+    },
+    {
+      title: 'Worker claims job',
+      body: 'Queue consumer receives the job. Local driver runs in-process; SQS uses visibility timeout. Handler is pure: job in → side effects → done/throw.',
+      chips: ['LocalQueue', 'SQS', 'visibility timeout']
+    },
+    {
+      title: 'Page Meta media',
+      body: 'Meta client walks Graph pagination (limit 50) until the 500-item cap or no more pages. Retries transient errors; permanent 4xx aborts the job.',
+      chips: ['limit=50', 'max 500', 'backoff 429/5xx']
+    },
+    {
+      title: 'Upsert each page',
+      body: 'Per page: <code>INSERT … ON CONFLICT (id) DO UPDATE</code> refreshing engagement metrics. Crash mid-sync is safe — prior pages already committed; redelivery is idempotent.',
+      chips: ['media.id = Meta id', 'like/comment refresh', 'per-page commits']
+    },
+    {
+      title: 'Upload pending assets',
+      body: 'Select rows with <code>storage_key IS NULL</code> and a usable <code>media_url</code>. Download with concurrency, put to storage, set key. Bad assets skip; never fail the batch.',
+      chips: ['resumable uploads', 'concurrency 5', 'S3 / local']
+    },
+    {
+      title: 'Mark hashtag synced',
+      body: 'Set <code>last_synced_at</code>. Job completes; message is deleted (or local ack). If the process died earlier, redelivery continues from upsert + pending uploads.',
+      chips: ['last_synced_at', 'ack / delete message']
+    },
+    {
+      title: 'Client reads the feed',
+      body: 'API serves <code>GET /hashtags?limit=20&cursor=…</code> via keyset on <code>(posted_at, id)</code>. Stable under inserts; O(page) not O(offset depth). Cursor is opaque base64url <code>{p,i}</code>.',
+      chips: ['keyset pagination', 'newest first', '400 on bad cursor']
+    }
+  ];
+
+  const timeline = document.getElementById('timeline');
+  steps.forEach((s, i) => {
+    const el = document.createElement('div');
+    el.className = 'step';
+    el.dataset.i = i;
+    el.innerHTML = `
+      <div class="rail"><div class="dot">${i + 1}</div></div>
+      <div class="step-body">
+        <h4>${s.title}</h4>
+        <p>${s.body}</p>
+        <div class="chips">${s.chips.map(c => `<span class="chip">${c}</span>`).join('')}</div>
+      </div>`;
+    timeline.appendChild(el);
+  });
+
+  let flowIndex = 0;
+  let playTimer = null;
+  const flowLabel = document.getElementById('flow-label');
+  const btnPrev = document.getElementById('flow-prev');
+  const btnNext = document.getElementById('flow-next');
+  const btnPlay = document.getElementById('flow-play');
+  const btnReset = document.getElementById('flow-reset');
+
+  function renderFlow() {
+    document.querySelectorAll('.step').forEach((el, i) => {
+      el.classList.toggle('visible', i <= flowIndex);
+      el.classList.toggle('active', i === flowIndex);
+      el.classList.toggle('done', i < flowIndex);
+    });
+    flowLabel.textContent = `Step ${flowIndex + 1} of ${steps.length}`;
+    btnPrev.disabled = flowIndex === 0;
+    btnNext.disabled = flowIndex === steps.length - 1;
+  }
+  function stopPlay() {
+    if (playTimer) clearInterval(playTimer);
+    playTimer = null;
+    btnPlay.textContent = '▶ Auto-play';
+  }
+  btnPrev.addEventListener('click', () => { stopPlay(); flowIndex = Math.max(0, flowIndex - 1); renderFlow(); });
+  btnNext.addEventListener('click', () => { stopPlay(); flowIndex = Math.min(steps.length - 1, flowIndex + 1); renderFlow(); });
+  btnReset.addEventListener('click', () => { stopPlay(); flowIndex = 0; renderFlow(); });
+  btnPlay.addEventListener('click', () => {
+    if (playTimer) { stopPlay(); return; }
+    btnPlay.textContent = '❚❚ Pause';
+    if (flowIndex === steps.length - 1) flowIndex = 0;
+    renderFlow();
+    playTimer = setInterval(() => {
+      if (flowIndex >= steps.length - 1) { stopPlay(); return; }
+      flowIndex++;
+      renderFlow();
+    }, 2200);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (!document.getElementById('flow').classList.contains('active')) return;
+    if (e.key === 'ArrowRight') btnNext.click();
+    if (e.key === 'ArrowLeft') btnPrev.click();
+  });
+  renderFlow();
+
+  /* ---------- Best practices ---------- */
+  const practices = [
+    { mark: 'yes', score: 1, title: 'API / worker separation', summary: 'Reads never share process risk with bursty ingestion.', detail: 'API is DB-read only; worker owns Meta + storage. This is the right default for independently scaling feed traffic vs sync backlog.' },
+    { mark: 'yes', score: 1, title: 'Idempotent ingestion', summary: 'Dedupe enforced by DB primary key + upsert.', detail: 'Meta media ID as PK + ON CONFLICT makes SQS at-least-once safe. No fragile “select then insert” race windows.' },
+    { mark: 'yes', score: 1, title: 'Keyset pagination', summary: 'Stable under inserts; index-aligned query.', detail: 'Offset pagination would duplicate/skip rows on a growing feed and degrade with depth. Cursor is opaque so encoding can evolve.' },
+    { mark: 'yes', score: 1, title: 'Failure-friendly asset pipeline', summary: 'Nullable storage_key + skip-on-error uploads.', detail: 'Meta CDN URLs expire — copying assets is required. Selecting storage_key IS NULL makes retries resumable without re-uploading successes.' },
+    { mark: 'yes', score: 1, title: 'Config validation at boot', summary: 'zod env parsing fails fast with clear errors.', detail: 'Missing tokens or driver misconfig refuse to start rather than crashing mid-sync at 3am.' },
+    { mark: 'yes', score: 1, title: 'External API hygiene', summary: 'Retry 429/5xx; fail-fast on 4xx; cache hashtag id.', detail: 'Respects Meta’s 30 unique hashtag searches / 7 days by caching. Avoids retry storms on expired tokens.' },
+    { mark: 'yes', score: 1, title: 'Minimal justified abstraction', summary: 'Only Queue and Storage are interfaces.', detail: 'Matches the local↔AWS requirement without DI frameworks or repository theater. Strong YAGNI discipline for a take-home.' },
+    { mark: 'yes', score: 1, title: 'Test pyramid that targets risk', summary: 'Unit + integration + API tests; TDD claimed for non-trivial units.', detail: 'Cursor codec, meta retries, upserts against real Postgres, supertest for HTTP. Tests focus on logic, not vanity coverage.' },
+    { mark: 'yes', score: 1, title: 'Type safety & lint toolchain', summary: 'strict TS, ESLint, Prettier, conventional structure.', detail: 'No any in src; typecheck and lint scripts available. Standard professional baseline.' },
+    { mark: 'partial', score: 0.5, title: 'Observability', summary: 'Structured product logs exist; no metrics/tracing yet.', detail: 'Acceptable for assignment scope and documented in the tradeoff ledger. Production would add job duration, queue depth, API latency, and a DLQ.' },
+    { mark: 'partial', score: 0.5, title: 'Scheduling & ops maturity', summary: 'In-process cron instead of managed scheduler.', detail: 'Keeps the repo one-command runnable. Cron only enqueues, so EventBridge swap is one call site — a clean seam.' },
+    { mark: 'partial', score: 0.5, title: 'Security posture (assignment-level)', summary: 'Secrets via env; no public write surface.', detail: 'Token-in-env is fine for take-home; production wants secrets manager + token refresh. API is read-only which reduces attack surface. Asset keys sanitize media IDs.' },
+    { mark: 'no', score: 0, title: 'Full multi-tenant product surface', summary: 'Not the goal — single seeded hashtag.', detail: 'Schema supports more hashtags, but there is no admin API, auth, or multi-tenant isolation. Correct for the brief; not a production product yet.' }
+  ];
+
+  const list = document.getElementById('practice-list');
+  const icons = { yes: '✓', partial: '~', no: '×' };
+  practices.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'practice';
+    btn.type = 'button';
+    btn.innerHTML = `
+      <span class="mark ${p.mark}">${icons[p.mark]}</span>
+      <span class="body"><strong>${p.title}</strong><span>${p.summary}</span></span>
+      <span class="toggle-icon">+</span>
+      <span class="detail">${p.detail}</span>`;
+    btn.addEventListener('click', () => {
+      const open = btn.classList.toggle('open');
+      btn.querySelector('.toggle-icon').textContent = open ? '−' : '+';
+    });
+    list.appendChild(btn);
+  });
+
+  const total = practices.length;
+  const earned = practices.reduce((s, p) => s + p.score, 0);
+  const pct = Math.round((earned / total) * 100);
+  const circumference = 2 * Math.PI * 68;
+  const arc = document.getElementById('score-arc');
+  const scoreNum = document.getElementById('score-num');
+  // animate on first practices tab view
+  let scored = false;
+  function animateScore() {
+    if (scored) return;
+    scored = true;
+    const target = circumference * (1 - pct / 100);
+    let frame = 0;
+    const frames = 40;
+    const tick = () => {
+      frame++;
+      const t = frame / frames;
+      const eased = 1 - Math.pow(1 - t, 3);
+      arc.style.strokeDashoffset = String(circumference - (circumference - target) * eased);
+      scoreNum.textContent = Math.round(pct * eased) + '%';
+      if (frame < frames) requestAnimationFrame(tick);
+    };
+    arc.style.strokeDasharray = String(circumference);
+    requestAnimationFrame(tick);
+  }
+  // if user lands on practices via hash
+  if (initial === 'practices') animateScore();
+  document.querySelector('.tab[data-tab="practices"]').addEventListener('click', animateScore);
+</script>
+</body>
+</html>

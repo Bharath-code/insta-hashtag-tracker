@@ -1,0 +1,67 @@
+{
+  "family": "hashtag-tracker-api",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "runtimePlatform": {
+    "cpuArchitecture": "ARM64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "executionRoleArn": "arn:aws:iam::ACCOUNT_ID:role/hashtag-tracker-ecs-execution",
+  "taskRoleArn": "arn:aws:iam::ACCOUNT_ID:role/hashtag-tracker-ecs-task-api",
+  "containerDefinitions": [
+    {
+      "name": "api",
+      "image": "ACCOUNT_ID.dkr.ecr.ap-south-2.amazonaws.com/hashtag-tracker:IMAGE_TAG",
+      "essential": true,
+      "command": ["node", "dist/api.js"],
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        { "name": "PORT", "value": "3000" },
+        { "name": "QUEUE_DRIVER", "value": "sqs" },
+        { "name": "STORAGE_DRIVER", "value": "s3" },
+        { "name": "AWS_REGION", "value": "ap-south-2" },
+        { "name": "S3_BUCKET", "value": "hashtag-tracker-storage-719905538532-ap-south-2-an" },
+        { "name": "SQS_QUEUE_URL", "value": "https://sqs.ap-south-2.amazonaws.com/719905538532/hastag-tracker-queue" },
+        { "name": "META_USER_ID", "value": "REPLACE_ME" },
+        { "name": "META_API_BASE", "value": "https://graph.facebook.com/v24.0" },
+        { "name": "META_PAGE_SIZE", "value": "3" },
+        { "name": "SYNC_MAX_ITEMS", "value": "500" }
+      ],
+      "secrets": [
+        {
+          "name": "DATABASE_URL",
+          "valueFrom": "arn:aws:secretsmanager:ap-south-2:ACCOUNT_ID:secret:hashtag-tracker/database-url"
+        },
+        {
+          "name": "META_ACCESS_TOKEN",
+          "valueFrom": "arn:aws:secretsmanager:ap-south-2:ACCOUNT_ID:secret:hashtag-tracker/meta-token"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/hashtag-tracker-api",
+          "awslogs-region": "ap-south-2",
+          "awslogs-stream-prefix": "api"
+        }
+      },
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "node -e \"fetch('http://127.0.0.1:3000/hashtags?limit=1').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 20
+      }
+    }
+  ]
+}

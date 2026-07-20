@@ -43,7 +43,8 @@ export class SqsQueue implements Queue {
             QueueUrl: this.queueUrl,
             MaxNumberOfMessages: 1,
             WaitTimeSeconds: 20,
-            VisibilityTimeout: 300,
+            // Asset download+S3 upload for hundreds of items can exceed 5 minutes.
+            VisibilityTimeout: 900,
           }),
         );
         for (const msg of res.Messages ?? []) {

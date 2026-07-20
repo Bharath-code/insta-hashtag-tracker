@@ -6,3 +6,11 @@ coverage/
 /problem_statement.md
 .claude/
 .remember/
+# Local personal notes / prep — never commit
+/local-notes/
+.kiro/
+.cursor/
+.cursorrules/
+.DS_Store
+*.log
+ai-usage/ai_chat.txt

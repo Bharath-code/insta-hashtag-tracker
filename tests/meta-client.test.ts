@@ -92,4 +92,39 @@ describe('MetaClient', () => {
     await expect(makeClient(fetchFn as typeof fetch).searchHashtag('x')).rejects.toThrow(MetaApiError);
     expect(fetchFn).toHaveBeenCalledTimes(3);
   });
+
+  it('shrinks page size on Meta reduce-data errors then continues', async () => {
+    const reduce = new Response(
+      JSON.stringify({ error: { code: 1, message: 'Please reduce the amount of data you are asking for' } }),
+      { status: 500 },
+    );
+    const fetchFn = vi
+      .fn()
+      // pageSize 2 → three 500s exhaust retries → MetaApiError reduce-data → shrink to 1
+      .mockResolvedValueOnce(reduce)
+      .mockResolvedValueOnce(reduce)
+      .mockResolvedValueOnce(reduce)
+      .mockResolvedValueOnce(
+        jsonResponse({
+          data: [media('1')],
+          paging: { cursors: { after: 'A' }, next: 'https://next' },
+        }),
+      )
+      .mockResolvedValueOnce(jsonResponse({ data: [media('2')] }));
+    const client = new MetaClient({
+      accessToken: 'tok',
+      userId: 'u1',
+      baseUrl: 'https://graph.test/v24.0',
+      pageSize: 2,
+      fetchFn: fetchFn as typeof fetch,
+      sleepFn: async () => {},
+    });
+    const pages: string[][] = [];
+    for await (const page of client.fetchHashtagMedia('h1', 'recent_media', 10)) {
+      pages.push(page.map((m) => m.id));
+    }
+    expect(pages).toEqual([['1'], ['2']]);
+    const limits = fetchFn.mock.calls.map((c) => new URL(c[0] as string).searchParams.get('limit'));
+    expect(limits.some((l) => l === '1')).toBe(true);
+  });
 });

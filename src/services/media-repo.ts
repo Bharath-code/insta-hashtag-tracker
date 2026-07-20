@@ -54,7 +54,8 @@ export class MediaRepo {
     await this.db('media')
       .insert(rows)
       .onConflict('id')
-      .merge(['like_count', 'comments_count', 'updated_at']);
+      // Refresh engagement + CDN URL (needed when re-uploading after storage_key is still null).
+      .merge(['like_count', 'comments_count', 'media_url', 'caption', 'updated_at']);
   }
 
   async listPage(limit: number, cursor?: Cursor): Promise<Array<MediaRow & { posted_at_cursor: string }>> {

@@ -27,15 +27,25 @@ export class SyncService {
     const hashtag = await this.deps.hashtags.findByName(job.payload.hashtag);
     if (!hashtag) throw new Error(`unknown hashtag: ${job.payload.hashtag}`);
 
-    for await (const page of this.deps.meta.fetchHashtagMedia(
-      job.payload.hashtagId,
-      edge,
-      this.deps.maxItems,
-    )) {
-      await this.deps.media.upsertBatch(hashtag.id, source, page);
+    // Fetch may partially succeed then fail (Meta "reduce data" / rate limits).
+    // Always drain pending asset uploads so S3 backlog does not stall forever.
+    let fetchError: unknown;
+    try {
+      for await (const page of this.deps.meta.fetchHashtagMedia(
+        job.payload.hashtagId,
+        edge,
+        this.deps.maxItems,
+      )) {
+        await this.deps.media.upsertBatch(hashtag.id, source, page);
+      }
+    } catch (err) {
+      fetchError = err;
+      console.error('media fetch failed; continuing with pending asset uploads', err);
     }
 
     await this.uploadPendingAssets(hashtag.id);
+
+    if (fetchError) throw fetchError;
     await this.deps.hashtags.setLastSynced(hashtag.id);
   }
 

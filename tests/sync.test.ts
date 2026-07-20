@@ -94,6 +94,24 @@ describe('SyncService', () => {
     expect(deps.media.setStorageKey).not.toHaveBeenCalled();
   });
 
+  it('still uploads pending assets when media fetch fails mid-sync', async () => {
+    const deps = makeDeps([[media('1', 'https://cdn/1.jpg')]], [
+      { id: '1', media_url: 'https://cdn/1.jpg' },
+      { id: 'pending', media_url: 'https://cdn/p.jpg' },
+    ]);
+    deps.meta.fetchHashtagMedia = vi.fn().mockImplementation(async function* () {
+      yield [media('1', 'https://cdn/1.jpg')];
+      throw new Error('Meta reduce data');
+    });
+    await expect(new SyncService(deps as unknown as SyncDeps).run(job(JOB_SYNC_RECENT))).rejects.toThrow(
+      /Meta reduce data/,
+    );
+    expect(deps.media.upsertBatch).toHaveBeenCalled();
+    expect(deps.storage.put).toHaveBeenCalled();
+    expect(deps.media.setStorageKey).toHaveBeenCalled();
+    expect(deps.hashtags.setLastSynced).not.toHaveBeenCalled();
+  });
+
   it('video content-type gets mp4 extension', async () => {
     const deps = makeDeps([], [{ id: 'v1', media_url: 'https://cdn/v1' }]);
     deps.fetchFn = vi.fn().mockResolvedValue(

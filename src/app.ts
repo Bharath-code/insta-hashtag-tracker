@@ -7,6 +7,14 @@ export function createApp(db: Knex): Express {
   const app = express();
   const media = new MediaRepo(db);
 
+  app.get('/', (_req: Request, res: Response) => {
+    res.json({
+      service: 'hashtag-tracker',
+      health: '/health',
+      hashtags: '/hashtags?limit=5',
+    });
+  });
+
   app.get('/health', (_req: Request, res: Response) => {
     res.json({ ok: true });
   });

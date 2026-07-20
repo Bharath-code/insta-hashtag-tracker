@@ -82,7 +82,8 @@ export class MetaClient {
     edge: 'top_media' | 'recent_media',
     maxItems: number,
   ): AsyncGenerator<MetaMedia[]> {
-    const pageSize = this.opts.pageSize ?? 50;
+    // Meta hashtag media often rejects large pages; shrink on "reduce the amount of data".
+    let pageSize = this.opts.pageSize ?? 50;
     let after: string | undefined;
     let fetched = 0;
     while (fetched < maxItems) {
@@ -91,7 +92,22 @@ export class MetaClient {
         limit: String(Math.min(pageSize, maxItems - fetched)),
       };
       if (after) params.after = after;
-      const page = pageSchema.parse(await this.request(this.buildUrl(`${hashtagId}/${edge}`, params)));
+      let page;
+      try {
+        page = pageSchema.parse(await this.request(this.buildUrl(`${hashtagId}/${edge}`, params)));
+      } catch (err) {
+        if (isReduceDataError(err) && pageSize > 1) {
+          pageSize = Math.max(1, Math.floor(pageSize / 2));
+          console.warn(`Meta reduce-data response; retrying with pageSize=${pageSize}`);
+          continue;
+        }
+        if (isReduceDataError(err) && fetched > 0) {
+          // Keep partial progress rather than failing the whole sync job.
+          console.warn('Meta reduce-data at min page size; stopping pagination with partial results');
+          return;
+        }
+        throw err;
+      }
       if (page.data.length === 0) return;
       yield page.data;
       fetched += page.data.length;
@@ -99,4 +115,9 @@ export class MetaClient {
       if (!after || !page.paging?.next) return;
     }
   }
+}
+
+function isReduceDataError(err: unknown): boolean {
+  if (!(err instanceof MetaApiError)) return false;
+  return /reduce the amount of data/i.test(err.message);
 }
